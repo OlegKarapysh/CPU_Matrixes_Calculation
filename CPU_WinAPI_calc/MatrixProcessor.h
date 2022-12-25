@@ -4,27 +4,21 @@
 
 template <class inf> void FillMatrFixed(Matrix<inf>& arr, unsigned width, unsigned height, inf val)
 {
-	if (arr != NULL)
+	unsigned size = width * height;
+	for (unsigned i = 0; i < size; ++i)
 	{
-		unsigned size = width * height;
-		for (unsigned i = 0; i < size; ++i)
-		{
-			arr[i] = val;
-		}
+		arr[i] = val;
 	}
 }
 
 template <class inf> void FillMatrRandom(Matrix<inf>& arr, unsigned width, unsigned height, inf seed)
 {
-	if (arr != NULL)
+	srand((unsigned)time(NULL));
+	unsigned size = width * height;
+	for (unsigned i = 0; i < size; ++i)
 	{
-		srand((unsigned)time(NULL));
-		unsigned size = width * height;
-		for (unsigned i = 0; i < size; ++i)
-		{
-			inf val = rand() * seed;
-			arr[i] = val ? val : val + 1;
-		}
+		inf val = rand() * seed;
+		arr[i] = val ? val : val + 1;
 	}
 }
 

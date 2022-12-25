@@ -7,8 +7,8 @@
 #include "MatrixProcessor.h"
 #include "ThreadParams.h"
 
-//#define SINGLE_MODE
-#define MULTITHREAD_MODE
+#define SINGLE_MODE
+//#define MULTITHREAD_MODE
 
 #define FILL_RANDOM 1
 #define FILL_FIXED 2
@@ -40,25 +40,26 @@ void GetMatrixDimensionsFromUser(
     size = width * height;
 }
 
-void InitArrays(
-    const unsigned size
-    , INF* &arr1
-    , INF* &arr2
-    , INF* &arr3
-    , INF* &arr4
-    , INF* &arr5
-    , INF* &result
+void InitMatrixes(
+    const unsigned width
+    , const unsigned height
+    , Matrix<INF>& matr1
+    , Matrix<INF>& matr2
+    , Matrix<INF>& matr3
+    , Matrix<INF>& matr4
+    , Matrix<INF>& matr5
+    , Matrix<INF>& result
 )
 {
-    arr1 = new INF[size];
-    arr2 = new INF[size];
-    arr3 = new INF[size];
-    arr4 = new INF[size];
-    arr5 = new INF[size];
-    result = new INF[size];
+    matr1.Resize(width, height);
+    matr2.Resize(width, height);
+    matr3.Resize(width, height);
+    matr4.Resize(width, height);
+    matr5.Resize(width, height);
+    result.Resize(width, height);
 }
 
-unsigned GetArrFillFromUser()
+unsigned GetMatrFillFromUser()
 {
     using namespace std;
     unsigned choice;
@@ -69,32 +70,32 @@ unsigned GetArrFillFromUser()
     return choice;
 }
 
-void FillArrByChoice(
+void FillMatrByChoice(
     unsigned choice
     , unsigned width
     , unsigned height
-    , INF* &arr1
-    , INF* &arr2
-    , INF* &arr3
-    , INF* &arr4
-    , INF* &arr5
+    , Matrix<INF>& matr1
+    , Matrix<INF>& matr2
+    , Matrix<INF>& matr3
+    , Matrix<INF>& matr4
+    , Matrix<INF>& matr5
 )
 {
     switch (choice)
     {
         case FILL_FIXED:
-            FillMatrFixed(arr1, width, height, (INF)FIXED_NUM);
-            FillMatrFixed(arr2, width, height, (INF)FIXED_NUM);
-            FillMatrFixed(arr3, width, height, (INF)FIXED_NUM);
-            FillMatrFixed(arr4, width, height, (INF)FIXED_NUM);
-            FillMatrFixed(arr5, width, height, (INF)FIXED_NUM);
+            FillMatrFixed(matr1, width, height, (INF)FIXED_NUM);
+            FillMatrFixed(matr2, width, height, (INF)FIXED_NUM);
+            FillMatrFixed(matr3, width, height, (INF)FIXED_NUM);
+            FillMatrFixed(matr4, width, height, (INF)FIXED_NUM);
+            FillMatrFixed(matr5, width, height, (INF)FIXED_NUM);
             break;
         default:
-            FillMatrRandom(arr1, width, height, (INF)FIXED_NUM);
-            FillMatrRandom(arr2, width, height, (INF)FIXED_NUM);
-            FillMatrRandom(arr3, width, height, (INF)FIXED_NUM);
-            FillMatrRandom(arr4, width, height, (INF)FIXED_NUM);
-            FillMatrRandom(arr5, width, height, (INF)FIXED_NUM);
+            FillMatrRandom(matr1, width, height, (INF)FIXED_NUM);
+            FillMatrRandom(matr2, width, height, (INF)FIXED_NUM);
+            FillMatrRandom(matr3, width, height, (INF)FIXED_NUM);
+            FillMatrRandom(matr4, width, height, (INF)FIXED_NUM);
+            FillMatrRandom(matr5, width, height, (INF)FIXED_NUM);
     }
 }
 
@@ -119,10 +120,7 @@ int main()
 {
     SysInf si = SysInf();
     unsigned width = 0, height = 0, size = 0, choice = FILL_RANDOM, worktime;
-    INF* arr1 = nullptr, * arr2 = nullptr, *arr3 = nullptr, *arr4 = nullptr, 
-        *arr5 = nullptr, * result = nullptr;
-    Matrix<INF>* matr1 = nullptr, * matr2 = nullptr, * matr3 = nullptr, 
-        * matr4 = nullptr, * matr5 = nullptr, * resultMatr = nullptr;
+    Matrix<INF> matr1, matr2, matr3, matr4, matr5, result;
     HANDLE hThreads[MAX_THREADS];
     ThreadParams<INF>* params;
 
@@ -130,18 +128,11 @@ int main()
 
     GetMatrixDimensionsFromUser(width, height, size);
 
-    InitArrays(size, arr1, arr2, arr3, arr4, arr5, result);
+    InitMatrixes(width, height, matr1, matr2, matr3, matr4, matr5, result);
    
-    FillArrByChoice(GetArrFillFromUser(), width, height, arr1, arr2, arr3, arr4, arr5);
-    
-    matr1 = new Matrix<INF>(arr1, width, height);
-    matr2 = new Matrix<INF>(arr2, width, height);
-    matr3 = new Matrix<INF>(arr3, width, height);
-    matr4 = new Matrix<INF>(arr4, width, height);
-    matr5 = new Matrix<INF>(arr5, width, height);
-    resultMatr = new Matrix<INF>(result, width, height);
+    FillMatrByChoice(GetMatrFillFromUser(), width, height, matr1, matr2, matr3, matr4, matr5);
 
-    InitThreadParams(matr1, matr2, matr3, matr4, matr5, resultMatr, params);
+    //InitThreadParams(matr1, matr2, matr3, matr4, matr5, result, params);
 
     worktime = GetTickCount64();
 #ifdef MULTITHREAD_MODE
@@ -170,12 +161,12 @@ int main()
 #ifdef SINGLE_MODE
     for (register unsigned i = 0; i < size; ++i)
     {
-        *((*resultMatr)[i]) = 
-            *((*matr1)[i]) + 
-            *((*matr2)[i]) *
-            *((*matr3)[i]) -
-            *((*matr4)[i]) -
-            *((*matr5)[i]);
+        result[i] = 
+            matr1[i] + 
+            matr2[i] *
+            matr3[i] -
+            matr4[i] -
+            matr5[i];
     }
 #endif // SINGLE_MODE
 
@@ -184,17 +175,14 @@ int main()
     // display first 5 elems
     for (unsigned i = 0; i < 5; i++)
     {
-        std::cout << (*resultMatr)[i] << std::endl;
-        std::cout << (*resultMatr)[size - i - 2] << std::endl;
+        std::cout << result[i] << std::endl;
+        std::cout << result[size - i - 2] << std::endl;
     }
 
     for (unsigned i = 0; i < MAX_THREADS; i++)
     {
         CloseHandle(hThreads[i]);
     }
-    delete[] arr1;
-    delete[] arr2;
-    delete[] result;
 
     return 0;
 }

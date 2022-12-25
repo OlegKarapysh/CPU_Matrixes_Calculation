@@ -85,18 +85,46 @@ private:
         return SUCCESS;
     }
 
-public:
+protected:
+    virtual int Resize(size_t newSize)
+    {
+        if (newSize < size)
+        {
+            for (int i = newSize; i < size; i++)
+            {
+                (arr + i)->~inf();
+            }
+            size = newSize;
+            return reserve(newSize);
+        }
 
+        if (newSize > capacity)
+        {
+            if (reserve(newSize) == FAIL)
+            {
+                return FAIL;
+            }
+        }
+
+        for (size_t i = size; i < newSize; i++)
+        {
+            new (arr + i) inf();
+        }
+        size = newSize;
+        return SUCCESS;
+    }
+
+public:
     DynamicArray()
     {
-        resize(1);
+        Resize(1);
     }
 
     DynamicArray(size_t userCapacity)
     {
         if (userCapacity)
         {
-            resize(userCapacity);
+            Resize(userCapacity);
         }
         else
         {
@@ -113,6 +141,36 @@ public:
     DynamicArray(const DynamicArray& other)
     {
         *this = other;
+    }
+
+    inf& operator [](size_t index)
+    {
+        /*if (index >= size)
+        {
+            throw std::exception("index out of range!");
+        }*/
+        return arr[index];
+    }
+
+    bool operator!()
+    {
+        return size == 0;
+    }
+
+    DynamicArray& operator=(const DynamicArray& other)
+    {
+        if (this != &other)
+        {
+            this->reserveStep = other.reserveStep;
+            if (this->Resize(other.size))
+            {
+                for (size_t i = 0; i < other.size; i++)
+                {
+                    this->arr[i] = other.arr[i];
+                }
+            }
+        }
+        return *this;
     }
 
     size_t GetSize()
@@ -135,46 +193,9 @@ public:
         reserveStep = newReserveStep;
     }
 
-    inf& operator [](size_t index)
-    {
-        /*if (index >= size)
-        {
-            throw std::exception("index out of range!");
-        }*/
-        return arr[index];
-    }
-
-    int resize(size_t newSize)
-    {
-        if (newSize < size)
-        {
-            for (int i = newSize; i < size; i++)
-            {
-                (arr + i)->~infPart();
-            }
-            size = newSize;
-            return reserve(newSize);
-        }
-
-        if (newSize > capacity)
-        {
-            if (reserve(newSize) == FAIL)
-            {
-                return FAIL;
-            }
-        }
-
-        for (size_t i = size; i < newSize; i++)
-        {
-            new (arr + i) inf();
-        }
-        size = newSize;
-        return SUCCESS;
-    }
-
     int pushBack(const inf& data)
     {
-        if (resize(size + 1))
+        if (Resize(size + 1))
         {
             arr[size - 1] = data;
             return SUCCESS;
@@ -184,7 +205,7 @@ public:
 
     int pushFront(const inf& data)
     {
-        if (resize(size + 1))
+        if (Resize(size + 1))
         {
             for (int i = size - 1; i > 0; i--)
             {
@@ -290,7 +311,7 @@ public:
             {
                 arr[i] = arr[i + 1];
             }
-            resize(size - 1);
+            Resize(size - 1);
             return SUCCESS;
         }
         return FAIL;
@@ -304,35 +325,14 @@ public:
             {
                 arr[index] = arr[index + 1];
             }
-            resize(size - 1);
+            Resize(size - 1);
             return SUCCESS;
         }
         return FAIL;
     }
     void removeAll()
     {
-        resize(0);
-    }
-
-    bool operator!()
-    {
-        return size == 0;
-    }
-
-    DynamicArray& operator=(const DynamicArray& other)
-    {
-        if (this != &other)
-        {
-            this->reserveStep = other.reserveStep;
-            if (this->resize(other.size))
-            {
-                for (size_t i = 0; i < other.size; i++)
-                {
-                    this->arr[i] = other.arr[i];
-                }
-            }
-        }
-        return *this;
+        Resize(0);
     }
 
     void sort()
@@ -345,7 +345,7 @@ public:
 
     int pushSorted(const inf& data)
     {
-        if (resize(size + 1))
+        if (Resize(size + 1))
         {
             if (0 == size - 1)
             {
@@ -374,7 +374,7 @@ public:
 
     int pushSortedForward(const inf& data)
     {
-        if (resize(size + 1))
+        if (Resize(size + 1))
         {
             for (size_t i = 0; i < size - 1; i++)
             {
@@ -396,7 +396,7 @@ public:
 
     int pushSortedBackward(const inf& data)
     {
-        if (resize(size + 1))
+        if (Resize(size + 1))
         {
             int i;
             for (i = size - 2; i >= 0 && data < arr[i]; i--)
