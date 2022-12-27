@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Matrix.h"
 
 template <typename inf> struct ThreadParams

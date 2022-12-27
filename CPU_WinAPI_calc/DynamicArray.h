@@ -26,41 +26,6 @@ private:
         else return s = 1; // >128 Kb
     }
 
-    void quickSort(inf* sortingArr, int sizeArr)
-    {
-        int i = 0;
-        int j = sizeArr - 1;
-
-        inf mid = sortingArr[sizeArr >> 1];
-
-        do {
-            while (sortingArr[i] < mid)
-            {
-                i++;
-            }
-            while (sortingArr[j] > mid)
-            {
-                j--;
-            }
-            if (i <= j)
-            {
-                inf tmp = sortingArr[i];
-                sortingArr[i] = sortingArr[j];
-                sortingArr[j] = tmp;
-                i++;
-                j--;
-            }
-        } while (i <= j);
-        if (j > 0)
-        {
-            quickSort(sortingArr, j + 1);
-        }
-        if (i < sizeArr)
-        {
-            quickSort(sortingArr + i, sizeArr - i);
-        }
-    }
-
     int reserve(size_t newSize)
     {
         if (newSize != 0)
@@ -86,14 +51,14 @@ private:
     }
 
 protected:
-    virtual int Resize(size_t newSize)
+    int Resize(size_t newSize)
     {
         if (newSize < size)
         {
-            for (int i = newSize; i < size; i++)
+            /*for (int i = newSize; i < size; i++)
             {
                 (arr + i)->~inf();
-            }
+            }*/
             size = newSize;
             return reserve(newSize);
         }
@@ -106,10 +71,10 @@ protected:
             }
         }
 
-        for (size_t i = size; i < newSize; i++)
+        /*for (size_t i = size; i < newSize; i++)
         {
             new (arr + i) inf();
-        }
+        }*/
         size = newSize;
         return SUCCESS;
     }
@@ -240,67 +205,6 @@ public:
         }
         return -1;
     }
-    int SearchBinary(const inf& target, int left = 0, int right = -1)
-    {
-        if (size)
-        {
-            int midd = 0;
-            if (-1 == right)
-            {
-                right = size - 1;
-            }
-            while (true)
-            {
-                midd = (left + right) >> 1;
-
-                if (target < arr[midd])
-                    right = midd - 1;
-                else if (target > arr[midd])
-                    left = midd + 1;
-                else
-                    return midd;
-
-                if (left > right)
-                    return -1;
-            }
-        }
-        return NOT_FOUND;
-    }
-
-    int insertBinarySearch(const inf& target, int left = 0, int right = -1)
-    {
-        if (size)
-        {
-            int midd = 0;
-            if (-1 == right)
-            {
-                right = size - 1;
-            }
-            while (true)
-            {
-                midd = (left + right) >> 1;
-
-                if (target < arr[midd])
-                {
-                    right = midd - 1;
-                }
-                else if (target > arr[midd])
-                {
-                    left = midd + 1;
-                }
-                else
-                {
-                    return midd;
-                }
-
-                if (left > right)
-                {
-                    return left;
-                }
-            }
-        }
-        return 0;
-    }
 
     int remove(inf& target)
     {
@@ -317,7 +221,7 @@ public:
         return FAIL;
     }
 
-    int removeIndex(size_t index)
+    int removeAt(size_t index)
     {
         if (index < size)
         {
@@ -330,112 +234,9 @@ public:
         }
         return FAIL;
     }
+
     void removeAll()
     {
         Resize(0);
     }
-
-    void sort()
-    {
-        if (size > 1)
-        {
-            quickSort(arr, size);
-        }
-    }
-
-    int pushSorted(const inf& data)
-    {
-        if (Resize(size + 1))
-        {
-            if (0 == size - 1)
-            {
-                arr[0] = data;
-                return SUCCESS;
-            }
-            else
-            {
-                int index = insertBinarySearch(data);
-                if (size == index)
-                {
-                    arr[index - 1] = data;
-                    return SUCCESS;
-                }
-
-                for (int i = size - 1; i > index; i--)
-                {
-                    arr[i] = arr[i - 1];
-                }
-                arr[index] = data;
-                return SUCCESS;
-            }
-        }
-        return FAIL;
-    }
-
-    int pushSortedForward(const inf& data)
-    {
-        if (Resize(size + 1))
-        {
-            for (size_t i = 0; i < size - 1; i++)
-            {
-                if (arr[i] >= data)
-                {
-                    for (int j = size - 1; j > i; j--)
-                    {
-                        arr[j] = arr[j - 1];
-                    }
-                    arr[i] = data;
-                    return SUCCESS;
-                }
-            }
-            arr[size - 1] = data;
-            return SUCCESS;
-        }
-        return FAIL;
-    }
-
-    int pushSortedBackward(const inf& data)
-    {
-        if (Resize(size + 1))
-        {
-            int i;
-            for (i = size - 2; i >= 0 && data < arr[i]; i--)
-            {
-                arr[i + 1] = arr[i];
-            }
-            arr[i + 1] = data;
-            return SUCCESS;
-        }
-        return FAIL;
-    }
-
-    void placing(size_t index)
-    {
-        if (size > 1 && index < size)
-        {
-            inf temp = arr[index];
-            int i;
-            if (index)
-            {
-                i = index - 1;
-                if (arr[i] > temp)
-                {
-                    for (i; i >= 0 && temp < arr[i]; i--)
-                    {
-                        arr[i + 1] = arr[i];
-                    }
-                    arr[i + 1] = temp;
-                    return;
-                }
-            }
-
-            for (i = index + 1; temp > arr[i] && i <= size - 1; i++)
-            {
-                arr[i - 1] = arr[i];
-            }
-            arr[i - 1] = temp;
-        }
-    }
 };
-
-

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DynamicArray.h";
+#include "DynamicArray.h"
 
 template <typename inf> class Matrix : public DynamicArray<inf>
 {
@@ -41,5 +41,25 @@ public:
         _width = width;
         _height = height;
         return DynamicArray<inf>::Resize(width * height);
+    }
+
+    void FillRandom(unsigned width, unsigned height, inf seed)
+    {
+        srand((unsigned)time(NULL));
+        unsigned size = width * height;
+        for (unsigned i = 0; i < size; ++i)
+        {
+            inf val = rand() * seed;
+            DynamicArray<inf>::operator[](i) = val ? val : val + 1;
+        }
+    }
+
+    void FillFixed(unsigned width, unsigned height, inf val)
+    {
+        unsigned size = width * height;
+        for (unsigned i = 0; i < size; ++i)
+        {
+            DynamicArray<inf>::operator[](i) = val;
+        }
     }
 };

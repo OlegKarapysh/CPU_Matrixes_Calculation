@@ -128,13 +128,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ConsoleInterface.cpp" />
     <ClCompile Include="SysInf.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConsoleInterface.h" />
     <ClInclude Include="DynamicArray.h" />
     <ClInclude Include="ThreadParams.h" />
     <ClInclude Include="Matrix.h" />
-    <ClInclude Include="MatrixProcessor.h" />
+    <ClInclude Include="ThreadCalc.h" />
     <ClInclude Include="SysInf.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

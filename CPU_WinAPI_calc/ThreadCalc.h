@@ -2,26 +2,6 @@
 
 #include "ThreadParams.h"
 
-template <class inf> void FillMatrFixed(Matrix<inf>& arr, unsigned width, unsigned height, inf val)
-{
-	unsigned size = width * height;
-	for (unsigned i = 0; i < size; ++i)
-	{
-		arr[i] = val;
-	}
-}
-
-template <class inf> void FillMatrRandom(Matrix<inf>& arr, unsigned width, unsigned height, inf seed)
-{
-	srand((unsigned)time(NULL));
-	unsigned size = width * height;
-	for (unsigned i = 0; i < size; ++i)
-	{
-		inf val = rand() * seed;
-		arr[i] = val ? val : val + 1;
-	}
-}
-
 template <class inf> DWORD WINAPI ThreadCalc(LPVOID params)
 {
 	ThreadParams<inf> *calcParams = (ThreadParams<inf>*)params;
