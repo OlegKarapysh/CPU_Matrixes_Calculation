@@ -10,12 +10,12 @@
 template <typename inf> class DynamicArray
 {
 private:
-    inf* arr = nullptr;
-    size_t size;
-    size_t capacity;
-    size_t reserveStep = addingMem();
+    inf* _arr = nullptr;
+    size_t _size;
+    size_t _capacity;
+    size_t _reserveStep = GetAddingMem();
 
-    size_t addingMem()
+    size_t GetAddingMem()
     {
         size_t s;
         if (sizeof(inf) < 8) return s = 256;// 1 byte
@@ -30,14 +30,14 @@ private:
     {
         if (newSize != 0)
         {
-            size_t newCapacity = (newSize / reserveStep + ((newSize % reserveStep == 0) ? 0 : 1)) * reserveStep;
-            if (newCapacity != capacity)
+            size_t newCapacity = (newSize / _reserveStep + ((newSize % _reserveStep == 0) ? 0 : 1)) * _reserveStep;
+            if (newCapacity != _capacity)
             {
-                inf* newArr = (inf*)realloc(arr, newCapacity * sizeof(inf));
+                inf* newArr = (inf*)realloc(_arr, newCapacity * sizeof(inf));
                 if (newArr != NULL)
                 {
-                    capacity = newCapacity;
-                    arr = newArr;
+                    _capacity = newCapacity;
+                    _arr = newArr;
                     return SUCCESS;
                 }
                 return FAIL;
@@ -45,25 +45,25 @@ private:
             return SUCCESS;
         }
 
-        arr = (inf*)realloc(arr, 0);
-        capacity = 0;
+        _arr = (inf*)realloc(_arr, 0);
+        _capacity = 0;
         return SUCCESS;
     }
 
 protected:
     int Resize(size_t newSize)
     {
-        if (newSize < size)
+        if (newSize < _size)
         {
             /*for (int i = newSize; i < size; i++)
             {
                 (arr + i)->~inf();
             }*/
-            size = newSize;
+            _size = newSize;
             return reserve(newSize);
         }
 
-        if (newSize > capacity)
+        if (newSize > _capacity)
         {
             if (reserve(newSize) == FAIL)
             {
@@ -75,7 +75,7 @@ protected:
         {
             new (arr + i) inf();
         }*/
-        size = newSize;
+        _size = newSize;
         return SUCCESS;
     }
 
@@ -93,14 +93,14 @@ public:
         }
         else
         {
-            size = 0;
-            capacity = 0;
+            _size = 0;
+            _capacity = 0;
         }
     }
 
     ~DynamicArray()
     {
-        removeAll();
+        RemoveAll();
     }
 
     DynamicArray(const DynamicArray& other)
@@ -114,24 +114,24 @@ public:
         {
             throw std::exception("index out of range!");
         }*/
-        return arr[index];
+        return _arr[index];
     }
 
     bool operator!()
     {
-        return size == 0;
+        return _size == 0;
     }
 
     DynamicArray& operator=(const DynamicArray& other)
     {
         if (this != &other)
         {
-            this->reserveStep = other.reserveStep;
-            if (this->Resize(other.size))
+            this->_reserveStep = other._reserveStep;
+            if (this->Resize(other._size))
             {
-                for (size_t i = 0; i < other.size; i++)
+                for (size_t i = 0; i < other._size; i++)
                 {
-                    this->arr[i] = other.arr[i];
+                    this->_arr[i] = other._arr[i];
                 }
             }
         }
@@ -140,53 +140,53 @@ public:
 
     size_t GetSize()
     {
-        return size;
+        return _size;
     }
 
     size_t GetCapacity()
     {
-        return capacity;
+        return _capacity;
     }
 
     size_t GetReserveStep()
     {
-        return reserveStep;
+        return _reserveStep;
     }
 
-    void setReserveStep(size_t newReserveStep)
+    void SetReserveStep(size_t newReserveStep)
     {
-        reserveStep = newReserveStep;
+        _reserveStep = newReserveStep;
     }
 
-    int pushBack(const inf& data)
+    int PushBack(const inf& data)
     {
-        if (Resize(size + 1))
+        if (Resize(_size + 1))
         {
-            arr[size - 1] = data;
+            _arr[_size - 1] = data;
             return SUCCESS;
         }
         return FAIL;
     }
 
-    int pushFront(const inf& data)
+    int PushFront(const inf& data)
     {
-        if (Resize(size + 1))
+        if (Resize(_size + 1))
         {
-            for (int i = size - 1; i > 0; i--)
+            for (int i = _size - 1; i > 0; i--)
             {
-                arr[i] = arr[i - 1];
+                _arr[i] = _arr[i - 1];
             }
-            arr[0] = data;
+            _arr[0] = data;
             return SUCCESS;
         }
         return FAIL;
     }
 
-    int search(const inf& target)
+    int Search(const inf& target)
     {
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < _size; i++)
         {
-            if (arr[i] == target)
+            if (_arr[i] == target)
             {
                 return i;
             }
@@ -194,48 +194,49 @@ public:
         return NOT_FOUND;
     }
 
-    int searchBackward(const inf target)
+    int SearchBackward(const inf target)
     {
-        for (int i = size - 1; i >= 0; i--)
+        for (int i = _size - 1; i >= 0; i--)
         {
-            if (arr[i] == target)
+            if (_arr[i] == target)
             {
                 return i;
             }
         }
-        return -1;
+        return NOT_FOUND;
     }
 
-    int remove(inf& target)
+    int Remove(const inf& target)
     {
-        int targetIndex = search(target);
-        if (targetIndex != -1)
+        int targetIndex = Search(target);
+        if (targetIndex == NOT_FOUND)
         {
-            for (size_t i = targetIndex; i < size - 1; i++)
+            return FAIL;
+        }
+
+        for (size_t i = targetIndex; i < _size - 1; i++)
+        {
+            _arr[i] = _arr[i + 1];
+        }
+        Resize(_size - 1);
+        return SUCCESS;
+    }
+
+    int RemoveAt(size_t index)
+    {
+        if (index < _size)
+        {
+            for (; index < _size - 1; index++)
             {
-                arr[i] = arr[i + 1];
+                _arr[index] = _arr[index + 1];
             }
-            Resize(size - 1);
+            Resize(_size - 1);
             return SUCCESS;
         }
         return FAIL;
     }
 
-    int removeAt(size_t index)
-    {
-        if (index < size)
-        {
-            for (; index < size - 1; index++)
-            {
-                arr[index] = arr[index + 1];
-            }
-            Resize(size - 1);
-            return SUCCESS;
-        }
-        return FAIL;
-    }
-
-    void removeAll()
+    void RemoveAll()
     {
         Resize(0);
     }

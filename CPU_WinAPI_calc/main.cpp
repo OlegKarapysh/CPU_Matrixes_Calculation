@@ -22,33 +22,15 @@ int main()
     InitThreadParams(matr1, matr2, matr3, matr4, matr5, result, params);
 
     worktime = GetTickCount64();
-#ifdef MULTITHREAD_MODE
-    for (unsigned i = 0; i < MAX_THREADS; ++i)
-    {
-        // TODO: don't return if error, wait for threads and close handles/resources
-        if (!(hThreads[i] = StartNewThread(ThreadCalc<INF>, (LPVOID)&(params[i]))))
-        {
-            std::cout << "Error: threads haven't been created. " << GetLastError();
-            return -1;
-        }
-    }
 
-    if (WaitForThreads(MAX_THREADS, hThreads) == WAIT_FAILED)
-    {
-        std::cout << "Error: failed to wait for threads. " << GetLastError();
-        return -1;
-    }
+#ifdef MULTITHREAD_MODE
+    CalculateMatrixesMultithread(hThreads, params);
 #endif // MULTITHREAD_MODE
 
 #ifdef SINGLE_MODE
     for (register unsigned i = 0; i < size; ++i)
     {
-        result[i] = 
-            matr1[i] + 
-            matr2[i] *
-            matr3[i] -
-            matr4[i] -
-            matr5[i];
+        result[i] = matr1[i] + matr2[i] * matr3[i] - matr4[i] - matr5[i];
     }
 #endif // SINGLE_MODE
 

@@ -111,6 +111,24 @@ DWORD WaitForThreads(DWORD threadsCount, const HANDLE* hThreads)
     return WaitForMultipleObjects(threadsCount, hThreads, TRUE, INFINITE);
 }
 
+void CalculateMatrixesMultithread(HANDLE  hThreads[], ThreadParams<INF>* params)
+{
+    unsigned currentThread = 0;
+    for (unsigned i = 0; i < MAX_THREADS; ++i)
+    {
+        if (!(hThreads[currentThread++] = StartNewThread(ThreadCalc<INF>, (LPVOID) & (params[i]))))
+        {
+            std::cout << "Error: thread " << currentThread << " has not been created. Error code:" << GetLastError();
+            currentThread--;
+        }
+    }
+
+    if (WaitForThreads(currentThread, hThreads) == WAIT_FAILED)
+    {
+        std::cout << "Error: failed to wait for threads. " << GetLastError();
+    }
+}
+
 void CloseThreadHandles(HANDLE  hThreads[])
 {
     for (unsigned i = 0; i < MAX_THREADS; i++)
@@ -149,3 +167,4 @@ void WriteResultToFileByChoice(const unsigned int size, Matrix<INF>& result)
 
     cout << "The result has not been written to file.";
 }
+
