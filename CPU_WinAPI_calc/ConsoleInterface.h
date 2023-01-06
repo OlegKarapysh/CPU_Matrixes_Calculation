@@ -63,7 +63,7 @@ DWORD WaitForThreads(DWORD threadsCount, const HANDLE* hThreads);
 
 void CloseThreadHandles(HANDLE  hThreads[]);
 
-void WriteResultToFileByChoice(const unsigned int size, Matrix<INF>& result);
+void WriteResultToFileByChoice(Matrix<INF>& result);
 
 void CalculateMatrixesMultithread(HANDLE  hThreads[], ThreadParams<INF>* params);
 

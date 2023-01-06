@@ -137,20 +137,23 @@ void CloseThreadHandles(HANDLE  hThreads[])
     }
 }
 
-void WriteResultToFile(const unsigned int size, Matrix<INF>& result)
+void WriteResultToFile(Matrix<INF>& result)
 {
     FILE* resFile = _tfopen(OUT_FILE_NAME, __TEXT("w+"));
     if (resFile)
     {
-        fprintf(resFile, "The list of pairs: vector index - result value:\n");
-        for (unsigned i = 0; i < size; i++)
+        fprintf(resFile, "The list of pairs: matrix element index - result value:\n");
+        for (unsigned i = 0; i < result.GetHeight(); i++)
         {
-            fprintf(resFile, "%u - %f\n", i, result[i]);
+            for (unsigned j = 0; j < result.GetWidth(); j++)
+            {
+                fprintf(resFile, "(%u, %u) - %f\n", i, j, result(i, j));
+            }
         }
     }
 }
 
-void WriteResultToFileByChoice(const unsigned int size, Matrix<INF>& result)
+void WriteResultToFileByChoice(Matrix<INF>& result)
 {
     using namespace std;
 
@@ -160,7 +163,7 @@ void WriteResultToFileByChoice(const unsigned int size, Matrix<INF>& result)
 
     if (writeToFileChoice == 'y' || writeToFileChoice == 'Y')
     {
-        WriteResultToFile(size, result);
+        WriteResultToFile(result);
         cout << "The result has been written to file.";
         return;
     }

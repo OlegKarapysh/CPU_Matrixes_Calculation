@@ -37,7 +37,7 @@ int main()
     worktime = GetTickCount64() - worktime;
     printf("Time: %u ms \n", worktime);
 
-    WriteResultToFileByChoice(size, result);
+    WriteResultToFileByChoice(result);
 
     CloseThreadHandles(hThreads);
 

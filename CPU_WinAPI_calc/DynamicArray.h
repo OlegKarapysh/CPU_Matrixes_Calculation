@@ -26,7 +26,7 @@ private:
         else return s = 1; // >128 Kb
     }
 
-    int reserve(size_t newSize)
+    int Reserve(size_t newSize)
     {
         if (newSize != 0)
         {
@@ -60,12 +60,12 @@ protected:
                 (arr + i)->~inf();
             }*/
             _size = newSize;
-            return reserve(newSize);
+            return Reserve(newSize);
         }
 
         if (newSize > _capacity)
         {
-            if (reserve(newSize) == FAIL)
+            if (Reserve(newSize) == FAIL)
             {
                 return FAIL;
             }
@@ -108,7 +108,7 @@ public:
         *this = other;
     }
 
-    inf& operator [](size_t index)
+    inf& operator [](const size_t index)
     {
         /*if (index >= size)
         {
